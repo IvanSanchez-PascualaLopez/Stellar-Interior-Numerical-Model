@@ -1,1 +1,70 @@
 X,Y,M_tot,R_tot,L_tot,Tc=Initial_Values()
+
+R_tot,L_tot,Tc=Optimal_Initial_Values (X,Y,M_tot,R_tot,L_tot,Tc)
+
+print('El valor óptimo de L_tot es :',L_tot,'·10^33 erg s^-1')
+print('El valor óptimo de R_tot es :',R_tot,'·10^10 cm')
+print('El valor óptimo de la Tc es :',Tc,'·10^7 K')
+
+star_values=Complete_Model (X,Y,M_tot,R_tot,L_tot,Tc)
+
+# Effective Temperature Stimation:
+T_eff = ((L_tot*(10**33)*(10**-7))/(4*np.pi*5.670374419e-8*(R_tot*10**8)**2))**(1/4)
+print('La temperatura efectiva de la estrella, T_eff, es de',int(T_eff),'K')
+
+fig,axs = plt.subplots(2,2,figsize=(10,10))
+fig.suptitle(r'$Star \ Parameters$',fontsize=25)
+
+axs[0,0].plot(star_values['r']/R_tot, star_values['P']/max(star_values['P']), linestyle='-', color='blue')
+axs[0,0].set_title(r'Pressure',fontsize=15)
+axs[0,0].set_xlabel(r'$r/R_{tot}$',fontsize=10)
+axs[0,0].set_ylabel(r'$P/P_{tot}$',fontsize=10)
+axs[0,0].set_xlim([0,1])
+axs[0,0].tick_params(axis='both',which='major',labelsize=8)
+axs[0,0].tick_params(bottom=True,top=True,left=True,right=True)
+axs[0,0].spines[['bottom','left','top','right']].set_linewidth(1)
+
+axs[0,1].plot(star_values['r']/R_tot, star_values['T']/max(star_values['T']), linestyle='-', color='red')
+axs[0,1].set_title(r'Temperature',fontsize=15)
+axs[0,1].set_xlabel(r'$r/R_{tot}$',fontsize=10)
+axs[0,1].set_ylabel(r'$T/T_{tot}$',fontsize=10)
+axs[0,1].set_xlim([0,1])
+axs[0,1].tick_params(axis='both',which='major',labelsize=8)
+axs[0,1].tick_params(bottom=True,top=True,left=True,right=True)
+axs[0,1].spines[['bottom','left','top','right']].set_linewidth(1)
+
+axs[1,0].plot(star_values['r']/R_tot, star_values['L']/max(star_values['L']), linestyle='-', color='yellow')
+axs[1,0].set_title(r'Luminosity',fontsize=15)
+axs[1,0].set_xlabel(r'$r/R_{tot}$',fontsize=10)
+axs[1,0].set_ylabel(r'$L/L_{tot}$',fontsize=10)
+axs[1,0].set_xlim([0,1])
+axs[1,0].tick_params(axis='both',which='major',labelsize=8)
+axs[1,0].tick_params(bottom=True,top=True,left=True,right=True)
+axs[1,0].spines[['bottom','left','top','right']].set_linewidth(1)
+
+axs[1,1].plot(star_values['r']/R_tot, star_values['M']/max(star_values['M']), linestyle='-', color='purple')
+axs[1,1].set_title(r'Mass',fontsize=15)
+axs[1,1].set_xlabel(r'$r/R_{tot}$',fontsize=10)
+axs[1,1].set_ylabel(r'$M/M_{tot}$',fontsize=10)
+axs[1,1].set_xlim([0,1])
+axs[1,1].tick_params(axis='both',which='major',labelsize=8)
+axs[1,1].tick_params(bottom=True,top=True,left=True,right=True)
+axs[1,1].spines[['bottom','left','top','right']].set_linewidth(1)
+
+plt.show()
+
+
+fig,ax = plt.subplots(figsize=(5,5))
+ax.plot(star_values['r']/R_tot, star_values['P']/max(star_values['P']), linestyle='-', color='blue',label='Pressure')
+ax.plot(star_values['r']/R_tot, star_values['T']/max(star_values['T']), linestyle='-', color='red',label='Temperature')
+ax.plot(star_values['r']/R_tot, star_values['L']/max(star_values['L']), linestyle='-', color='yellow',label='Luminosity')
+ax.plot(star_values['r']/R_tot, star_values['M']/max(star_values['M']), linestyle='-', color='purple',label='Mass')
+ax.set_title(r'Parameters',fontsize=15)
+ax.set_ylabel(r'$Relative \ value$',fontsize=10)
+ax.set_xlabel(r'$r/R_{tot}$',fontsize=10)
+ax.set_xlim([0,1])
+ax.tick_params(axis='both',which='major',labelsize=8)
+ax.tick_params(bottom=True,top=True,left=True,right=True)
+ax.spines[['bottom','left','top','right']].set_linewidth(1)
+ax.legend(fontsize=12,markerscale=2.4)
+plt.show()
