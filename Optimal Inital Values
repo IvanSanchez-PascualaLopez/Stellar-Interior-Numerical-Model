@@ -1,0 +1,70 @@
+def Optimal_Initial_Values (X,Y,M_tot,R_tot,L_tot,Tc):
+    dL = 10
+    dR = 1
+    
+    nzooms=5
+    
+    for n in range(0,nzooms):
+        
+        L_values = np.arange(L_tot-dL,L_tot+(6/5)*dL,dL/5)  # Vector with the variance of L_tot:
+        print(L_values)
+        R_values = np.arange(R_tot-dR,R_tot+(6/5)*dR,dR/5)  # Vector with the variance of R_tot:
+        print(R_values)
+        
+        
+        # Vectors with the total relative error at the boundary layer for each M_tot, L_tot:
+        Erel_values = np.zeros([len(L_values),len(R_values)]) # Vector to include the minimun errors on each row (each value of L)
+        Tc_values = np.zeros([len(L_values),len(R_values)])  # Vector to include the position of the minimun errors on each row (each value of L)
+        
+        for i in range(len(L_values)):   
+            for j in range(len(R_values)):   
+                Tc_opt=Optimal_Tc (X,Y,M_tot,R_values[j],L_values[i],Tc)
+                comparative_values=Relative_Errors (X,Y,M_tot,R_values[j],L_values[i],Tc_opt)
+                Tc_values[i][j] = Tc_opt
+                Erel_values[i][j] = comparative_values.at[2,'--']
+        
+        zoom = n+1
+        L_axis = []
+        R_axis = []      
+                
+        for i in range(len(L_values)):
+            if i%2 != 0:
+                L_axis.append(L_values[i])
+        for i in range(len(R_values)):
+            if i%2 == 0:
+                R_axis.append(R_values[i])
+    
+        # Look for the minimum error:
+        E_min = np.zeros(len(L_values))
+        j_min = np.zeros(len(L_values))
+    
+        for i in range(len(L_values)):   
+            E_min[i] = min(Erel_values[i,:])
+            j_min[i] = np.where(Erel_values[i,:]==E_min[i])[0]
+        I_MIN = int(np.where(E_min==min(E_min))[0])               # Positon of the L minimum
+        J_MIN = int(j_min[I_MIN])                                     # Positon of the R minimum
+    
+               
+        print('Zoom '+str(zoom),'\nOptimus L:',L_values[I_MIN],'\nOptimus R:',R_values[J_MIN],'\nOptimus Tc:',Tc_values[I_MIN][J_MIN])        
+        
+        # Zoom Plot: 
+        fig,ax = plt.subplots(figsize=(7,7))
+        ax.imshow(Erel_values,cmap='coolwarm')
+        ax.set_title(r'Zoom '+str(zoom),fontsize=24)
+        ax.set_xlabel(r'$\mathbf{R} \ [10^{10} \ \rm{cm}]$',fontsize=14)
+        ax.set_ylabel(r'$\mathbf{L} \ [10^{33} \ \rm{erg \ s^{-1}}]$',fontsize=14)
+        ax.set_xticks(np.arange(0,11,2))
+        ax.set_yticks(np.arange(1,17,2))
+        #ax.set_xticklabels(np.round(R_ax,1))
+        #ax.set_yticklabels(np.round(L_ax,0))
+        ax.tick_params(axis='both',which='major',labelsize=11)
+        ax.tick_params(bottom=True,top=True,left=True,right=True)
+        ax.tick_params(axis='x',labelrotation=-60)
+        plt.show()
+    
+        L_tot=L_values[I_MIN]
+        dL=dL/5
+        R_tot=R_values[J_MIN]
+        dR=dR/5
+        Tc=Tc_values[I_MIN][J_MIN]
+    return(R_tot,L_tot,Tc)
